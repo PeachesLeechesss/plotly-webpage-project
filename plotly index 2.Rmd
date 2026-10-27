@@ -1,0 +1,54 @@
+---
+title: "A Tiny Observatory: Exploring Global Development"
+author: "Shyama Mohanty"
+date: "27 October 2026"
+output:
+  html_document:
+    self_contained: true
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(plotly)
+library(gapminder)
+```
+
+# A Tiny Observatory
+
+**Created: 27 October 2026**
+
+Explore the relationship between national income and life expectancy. Each bubble is a country, size represents population, and colour represents continent. Hover over bubbles for details and use the year slider to explore change over time.
+
+```{r interactive-plot}
+gm <- gapminder::gapminder
+plot_ly(data = gm, x = ~gdpPercap, y = ~lifeExp, size = ~pop,
+        color = ~continent, frame = ~year,
+        text = ~paste0("<b>", country, "</b><br>Year: ", year,
+          "<br>Continent: ", continent,
+          "<br>Population: ", format(pop, big.mark = ","),
+          "<br>GDP per capita: $", round(gdpPercap, 0),
+          "<br>Life expectancy: ", round(lifeExp, 1), " years"),
+        hoverinfo = "text", type = "scatter", mode = "markers",
+        marker = list(opacity = 0.72, sizemode = "area", sizeref = 2.5)) |>
+  layout(title = list(text = "Life expectancy, income, and population over time"),
+         xaxis = list(title = "GDP per capita (US dollars, log scale)", type = "log"),
+         yaxis = list(title = "Life expectancy (years)", range = c(20, 90)),
+         legend = list(title = list(text = "Continent"))) |>
+  animation_opts(frame = 700, transition = 250, redraw = FALSE) |>
+  animation_slider(currentvalue = list(prefix = "Year: ")) |>
+  animation_button(x = 1, xanchor = "right", y = 0, yanchor = "bottom")
+```
+
+## What to look for
+
+- **The broad upward pattern:** countries with higher GDP per capita often have higher life expectancy, although income alone does not explain health outcomes.
+- **Differences between continents:** the point clouds overlap, but regions show different historical trajectories.
+- **Population scale:** larger bubbles represent more people.
+- **Change over time:** use the animation controls to compare years from 1952 to 2007.
+
+This is an exploratory visualization, not a causal analysis. Country-level averages cannot be used to infer an individual person's health.
+
+## Data source
+
+Gapminder country-level data distributed in the R package `gapminder`. Interactive chart built with Plotly for R Markdown.
